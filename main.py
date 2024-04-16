@@ -1,0 +1,160 @@
+import pygame
+import math
+import random
+
+#initialize the pygame- always use init
+pygame.init()
+width = 700
+height = 500
+
+#make screen - the screen only displays a second.
+screen = pygame.display.set_mode((width, height))
+
+#background
+background = pygame.image.load('background.png')
+
+#Title and Icon (añadir favicon al screen)
+pygame.display.set_caption("Spikey")
+icon = pygame.image.load('space.png')
+pygame.display.set_icon(icon)
+
+#players -  and enemy create variables of position
+playerImg = pygame.image.load("space.png")
+player_x = 320
+player_y = 420
+player_x_change = 0
+
+#enemy
+enemyImg = []
+enemy_x = []
+enemy_y = []
+enemy_x_change = []
+enemy_y_change = []
+num_enemies = 6
+
+for i in range(num_enemies):
+    enemyImg.append(pygame.image.load("ufo.png")) 
+    enemy_x.append(random.randint(0, 635)) 
+    enemy_y.append(random.randint(40, 110))
+    enemy_x_change.append(4) 
+    enemy_y_change.append(40)
+
+#bullet
+#ready you cannot see bullet
+#fire bullet is moving
+bulletImg = pygame.image.load('bullet.png')
+bullet_x = 0
+bullet_y = 420
+bullet_x_change = 0
+bullet_y_change = 13
+bullet_state = "ready"
+
+#score
+score_value = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+
+text_x = 10
+test_y = 10
+
+#create a clock object
+clock = pygame.time.Clock()
+
+def show_score(x, y):
+    score = font.render("Score :" + str(score_value), True, (255, 255, 255))
+    screen.blit(score, (x, y))
+
+def player(x, y):
+    screen.blit(playerImg, (x, y))
+
+def enemy(x, y, i):
+    screen.blit(enemyImg[i], (x, y))
+
+def fire_bullet(x, y):
+    global bullet_state
+    bullet_state = "fire"
+    screen.blit(bulletImg, (x + 16, y + 10))
+
+def isCollision(enemy_x, enemy_y, bullet_x, bullet_y):
+    distance = math.sqrt((math.pow(enemy_x-bullet_x, 2)) + (math.pow(enemy_y-bullet_y, 2)))
+    if distance < 27:
+        return True
+    else:
+        return False
+#Game loop for keeping the screen
+#running for the screen to beable to exit
+running = True
+while running:
+
+    #set frame rate to 60 fps
+    clock.tick(30)
+
+    screen.fill((0, 0, 0))
+
+    #background adding image
+    screen.blit(background, (0, 0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        #if keystroke is pressed
+        if event.type  == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                player_x_change = -10
+            if event.key == pygame.K_RIGHT:
+                player_x_change = 10
+            if event.key == pygame.K_SPACE:
+                if bullet_state == "ready":
+                    #get x coordinate of spaceship and stores in bullet_x
+                    bullet_x = player_x
+                    fire_bullet(bullet_x, bullet_y)
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                player_x_change = 0
+    
+
+# llamar función player después de la ventana
+#comprobar los bordes para que la nave no se salga de la ventana
+    player_x += player_x_change
+    if player_x <= 0:
+        player_x = 0
+    elif player_x >= 636:
+        player_x = 636
+
+#enemy movement
+    for i in range(num_enemies):
+        enemy_x[i] += enemy_x_change[i]
+        if enemy_x[i] <= 0:
+            enemy_x_change[i] = 7
+            enemy_y[i] += enemy_y_change[i]
+        elif enemy_x[i] >= 636:
+            enemy_x_change[i] = -7
+            enemy_y[i] += enemy_y_change[i]
+
+        #collision
+        collision = isCollision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
+        if collision:
+            bullet_y = 420
+            bullet_state = "ready"
+            score_value += 1
+            enemy_x[i] = random.randint(0, 635)
+            enemy_y[i] = random.randint(40, 110)
+    
+        enemy(enemy_x[i], enemy_y[i], i)
+
+    #bullet movement
+    if bullet_y <= 0:
+        bullet_y = 420
+        bullet_state = "ready"
+
+    if  bullet_state == "fire":
+        fire_bullet(bullet_x, bullet_y) 
+        bullet_y -= bullet_y_change
+
+   
+
+    player(player_x, player_y) 
+    show_score(text_x, test_y)
+    pygame.display.update()
+
+    

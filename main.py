@@ -2,29 +2,28 @@ import pygame
 import math
 import random
 
-#initialize the pygame- always use init
+#Inicializar pygame- usar init
 pygame.init()
 width = 700
 height = 500
 
-#make screen - the screen only displays a second.
+#Crear venta - se visualizará 1 segundo.
 screen = pygame.display.set_mode((width, height))
 
-#background
+#Adjuntar fondo
 background = pygame.image.load('background.png')
 
-#Title and Icon (añadir favicon al screen)
+#Título + icono (añadir favicon a la ventana)
 pygame.display.set_caption("Spikey")
 icon = pygame.image.load('space.png')
 pygame.display.set_icon(icon)
 
-#players -  and enemy create variables of position
+#Jugadores - playaer/enemy crear variables de posición
 playerImg = pygame.image.load("space.png")
 player_x = 320
 player_y = 420
 player_x_change = 0
 
-#enemy
 enemyImg = []
 enemy_x = []
 enemy_y = []
@@ -39,9 +38,9 @@ for i in range(num_enemies):
     enemy_x_change.append(4) 
     enemy_y_change.append(40)
 
-#bullet
-#ready you cannot see bullet
-#fire bullet is moving
+#Añadir proyectil
+#ready: no se ve el proyectil
+#fire: proyectil en movimiento
 bulletImg = pygame.image.load('bullet.png')
 bullet_x = 0
 bullet_y = 420
@@ -49,14 +48,14 @@ bullet_x_change = 0
 bullet_y_change = 13
 bullet_state = "ready"
 
-#score
+#Puntuación
 score_value = 0
 font = pygame.font.Font('freesansbold.ttf', 32)
 
 text_x = 10
 test_y = 10
 
-#create a clock object
+#Crear objeto tiempo 
 clock = pygame.time.Clock()
 
 def show_score(x, y):
@@ -80,23 +79,23 @@ def isCollision(enemy_x, enemy_y, bullet_x, bullet_y):
         return True
     else:
         return False
-#Game loop for keeping the screen
-#running for the screen to beable to exit
+        
+#Loop de juego
 running = True
 while running:
 
-    #set frame rate to 60 fps
+
     clock.tick(30)
 
     screen.fill((0, 0, 0))
 
-    #background adding image
+    #Imagen de background
     screen.blit(background, (0, 0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        #if keystroke is pressed
+        #Condicional para acciones de las teclas
         if event.type  == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 player_x_change = -10
@@ -104,7 +103,6 @@ while running:
                 player_x_change = 10
             if event.key == pygame.K_SPACE:
                 if bullet_state == "ready":
-                    #get x coordinate of spaceship and stores in bullet_x
                     bullet_x = player_x
                     fire_bullet(bullet_x, bullet_y)
 
@@ -121,7 +119,7 @@ while running:
     elif player_x >= 636:
         player_x = 636
 
-#enemy movement
+#Movimiento enemigos
     for i in range(num_enemies):
         enemy_x[i] += enemy_x_change[i]
         if enemy_x[i] <= 0:
@@ -131,7 +129,7 @@ while running:
             enemy_x_change[i] = -7
             enemy_y[i] += enemy_y_change[i]
 
-        #collision
+        #Colisión
         collision = isCollision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
         if collision:
             bullet_y = 420
@@ -142,7 +140,7 @@ while running:
     
         enemy(enemy_x[i], enemy_y[i], i)
 
-    #bullet movement
+    #Movimiento proyectil
     if bullet_y <= 0:
         bullet_y = 420
         bullet_state = "ready"

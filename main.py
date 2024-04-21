@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((width, height))
 background = pygame.image.load('background.png')
 
 #Título + icono (añadir favicon a la ventana)
-pygame.display.set_caption("Spikey")
+pygame.display.set_caption("Arcade")
 icon = pygame.image.load('space.png')
 pygame.display.set_icon(icon)
 
